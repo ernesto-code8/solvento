@@ -1,27 +1,27 @@
-# Nombre de la Aplicación: Solvento Planning
+# Application Name:: Solvento Planning
 
-Descripción de la aplicación:  Planificador  de viajes dada compras realizadas
+App Description: Trip Planner Given Purchases Made
 
-## Instalación Local
+## Local Installation
 
-Clona el repositorio y sigue los siguientes pasos para configurar el entorno de desarrollo local.
+Clone the repository and follow the steps below to set up the local development environment.
 
 ```bash
 git clone https://github.com/ernesto-code8/solvento.git
 cd solvento
 yarn install
 
-Para iniciar la aplicación en un entorno de desarrollo:
+To start the application in a development environment:
 yarn start
 
-Verificar contenido del fichero .env para 
+Verify content of the .env file to establish values ​​according to the environment where the application will be run.
 NODE_PORT= 4000
 DB_HOST= localhost
 DB_NAME= solvento
 DB_USER= postgres
 DB_PASSWORD= postgres
 DB_PORT= 5432
-CANT_VISITAS_TRUCK= 3     esta variable establece la cantidad de veces que puedo viajar un camion a diferentes codigos postales
+CANT_VISITAS_TRUCK= 3     This variable establishes the number of times a truck can travel to different zip codes.
 
 
 
