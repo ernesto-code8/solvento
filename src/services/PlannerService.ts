@@ -1,17 +1,16 @@
-import { Database } from '../databases/databases';
-import { TripPlan } from '../dto/TripPlan';
-import { TruckAssignment } from '../dto/TruckAssignment';
-import { State } from '../enums/State';
-import { WorkDays } from '../enums/WorkDays';
+import { Database } from "../databases/databases";
+import { TripPlan } from "../dto/TripPlan";
+import { TruckAssignment } from "../dto/TruckAssignment";
+import { State } from "../enums/State";
+import { WorkDays } from "../enums/WorkDays";
 
-
-import dotenv from 'dotenv';
+import dotenv from "dotenv";
 
 dotenv.config();
 
 export class PlannerService {
-    async planTrips(date: string): Promise<TripPlan[]> {      
-        const sql = `
+  async planTrips(date: string): Promise<TripPlan[]> {
+    const sql = `
             SELECT 
                 p.id AS purchase_id,
                 STRING_AGG(DISTINCT a.zipCode, ', ') AS zipCodes
@@ -29,29 +28,40 @@ export class PlannerService {
                 COUNT(DISTINCT a.zipCode) <= $1;
         `;
 
-        const tripPlans = [];
-        const result = await Database.getInstance().query(sql,[process.env.CANT_VISITAS_TRUCK]);
+    const tripPlans = [];
+    const result = await Database.getInstance().query(sql, [
+      process.env.CANT_VISITAS_TRUCK,
+    ]);
 
-        for (const row of result) {
-            const sql = `INSERT INTO Trip (departure, state, truck_id) VALUES ($1, $2,$3) RETURNING *;`;
-            const insertResultTrip = await  Database.getInstance().query(sql,[date,State.Pending,null]);
+    for (const row of result) {
+      const sql = `INSERT INTO Trip (departure, state, truck_id) VALUES ($1, $2,$3) RETURNING *;`;
+      const insertResultTrip = await Database.getInstance().query(sql, [
+        date,
+        State.Pending,
+        null,
+      ]);
 
-            const sqlUpdate = `UPDATE Purchase SET trip_id = $1, deliveryDate = $2 WHERE id = $3;`;
-            // const updateResultPurchase= await  Database.getInstance().query(sqlUpdate,[insertResultTrip[0].id,date,row.id]);
-           Database.getInstance().query(sqlUpdate,[insertResultTrip[0].id,date,row.purchase_id]);
+      const sqlUpdate = `UPDATE Purchase SET trip_id = $1, deliveryDate = $2 WHERE id = $3;`;
+      // const updateResultPurchase= await  Database.getInstance().query(sqlUpdate,[insertResultTrip[0].id,date,row.id]);
+      await Database.getInstance().query(sqlUpdate, [
+        insertResultTrip[0].id,
+        date,
+        row.purchase_id,
+      ]);
 
-            const tripPlan : TripPlan = {
-                tripId: insertResultTrip[0].id,
-                zipCodes: row.zipcodes.split(', ')
-            };
-           tripPlans.push(tripPlan);
-        }
-          return tripPlans;
+      const tripPlan: TripPlan = {
+        tripId: insertResultTrip[0].id,
+        zipCodes: row.zipcodes.split(", "),
+      };
+      tripPlans.push(tripPlan);
     }
+    console.log("sss" + tripPlans);
+    return tripPlans;
+  }
 
-    async assignTrucks(date: string): Promise<TruckAssignment[]> {
-        // Simular la asignación de camiones
-        const sqlPendingTrips = `
+  async assignTrucks(date: string): Promise<TruckAssignment[]> {
+    // Simular la asignación de camiones
+    const sqlPendingTrips = `
         SELECT 
             t.id AS trip_id,
             p.weight AS total_weight
@@ -65,7 +75,7 @@ export class PlannerService {
             t.id,
             p.weight;
       `;
-      const sqlAvailableTrucks = `
+    const sqlAvailableTrucks = `
       SELECT t.id, t.plateNumber
       FROM Truck as t
       LEFT JOIN Trip tr ON t.id = tr.truck_id
@@ -73,57 +83,63 @@ export class PlannerService {
         AND workDays = $2
         AND tr.truck_id IS NULL;  
     `;
-        // const sql = 'SELECT * FROM truck';
-        const pendingTrips = await Database.getInstance().query(sqlPendingTrips,[State.Pending]);
-      //  console.log("pendingTrips: " + pendingTrips.length);
-        
-        const truckPlans = [];
-        const dateObject: Date = new Date(date);
-  
-        for (const row of pendingTrips){
-            let trip = "";
-            let plateNumber = "";
-            let error = "";
-    
-           const days =  Object.values(WorkDays);
-           let dayWeek = days[dateObject.getDay()].toString();
+    // const sql = 'SELECT * FROM truck';
+    const pendingTrips = await Database.getInstance().query(sqlPendingTrips, [
+      State.Pending,
+    ]);
+    //  console.log("pendingTrips: " + pendingTrips.length);
 
-           console.log(row.total_weight);
+    const truckPlans = [];
+    const dateObject: Date = new Date(date);
 
-           const availableTrucks = await Database.getInstance().query(sqlAvailableTrucks,[row.total_weight, dayWeek]);
-           console.log(availableTrucks);
+    for (const row of pendingTrips) {
+      let trip = "";
+      let plateNumber = "";
+      let error = "";
 
-             if(availableTrucks.length == 1){
-                trip = "Trip "+row.trip_id;
-                plateNumber = availableTrucks[0].platenumber;
-             }
-             else if (availableTrucks.length > 1){
-                trip = "Trip "+row.trip_id;
-                let random = getRandomInt(availableTrucks.length-1) // para que no escoja siempre el mismo camion
-                plateNumber = availableTrucks[random].platenumber;             
-             }
-             else{
-                trip = "Trip "+row.trip_id;
-                plateNumber = "";
-                error = "Error: No trucks meet requirements";
-             }
-             if(error == ""){
-                let sqlUpdaTrip = `UPDATE Trip SET truck_id = $1 , state = $2 WHERE id = $3;`;
-                Database.getInstance().query(sqlUpdaTrip,[availableTrucks[0].id, State.OnTrip ,row.trip_id]);
-             }
-             const truckAssignment : TruckAssignment = {
-                tripNameId: trip,
-                plateNumber: plateNumber,
-                error: error
-            };
-            truckPlans.push(truckAssignment);
-        }     
-       return truckPlans;
-    }  
-  
+      const days = Object.values(WorkDays);
+      const dayWeek = days[dateObject.getDay()].toString();
+
+      console.log(row.total_weight);
+
+      const availableTrucks = await Database.getInstance().query(
+        sqlAvailableTrucks,
+        [row.total_weight, dayWeek],
+      );
+      console.log(availableTrucks);
+
+      if (availableTrucks.length == 1) {
+        trip = "Trip " + row.trip_id;
+        plateNumber = availableTrucks[0].platenumber;
+      } else if (availableTrucks.length > 1) {
+        trip = "Trip " + row.trip_id;
+         // para que no escoja siempre el mismo camion en caso de que exista mas de uno
+        const random = getRandomInt(availableTrucks.length - 1);
+        plateNumber = availableTrucks[random].platenumber;
+      } else {
+        trip = "Trip " + row.trip_id;
+        plateNumber = "";
+        error = "Error: No trucks meet requirements";
+      }
+      if (error == "") {
+        const sqlUpdaTrip = `UPDATE Trip SET truck_id = $1 , state = $2 WHERE id = $3;`;
+        Database.getInstance().query(sqlUpdaTrip, [
+          availableTrucks[0].id,
+          State.OnTrip,
+          row.trip_id,
+        ]);
+      }
+      const truckAssignment: TruckAssignment = {
+        tripNameId: trip,
+        plateNumber: plateNumber,
+        error: error,
+      };
+      truckPlans.push(truckAssignment);
+    }
+    return truckPlans;
+  }
 }
 
 function getRandomInt(max: number): number {
-    return Math.floor(Math.random() * max);
+  return Math.floor(Math.random() * max);
 }
-
