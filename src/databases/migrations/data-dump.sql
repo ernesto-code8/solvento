@@ -16,119 +16,93 @@ INSERT INTO Address (address, city, zipCode) VALUES
 ('Avenida Revolución 111', 'Tijuana', '22000'),
 ('Avenida Morelos 112', 'Cuernavaca', '62000');
 
+
 INSERT INTO Truck (plateNumber, maxWeightCapacity, workDays) VALUES
-('ABC123', 5000, 'Mon-Fri'),
-('DEF456', 6000, 'Mon-Fri'),
-('GHI789', 5500, 'Tue-Sat'),
-('JKL012', 6200, 'Mon-Fri'),
-('MNO345', 5100, 'Wed-Sun'),
-('PQR678', 5300, 'Mon-Fri'),
-('STU901', 5400, 'Tue-Sat'),
-('VWX234', 5700, 'Mon-Fri'),
-('YZA567', 5900, 'Wed-Sun'),
-('BCD890', 5200, 'Mon-Fri'),
-('EFG123', 6100, 'Tue-Sat'),
-('HIJ456', 6300, 'Mon-Fri'),
-('KLM789', 5000, 'Wed-Sun'),
-('NOP012', 5800, 'Mon-Fri'),
-('QRS345', 5600, 'Tue-Sat');
+('ABC123', 5000, 'Monday'),
+('DEF456', 6000, 'Friday'),
+('GHI789', 5500, 'Tuesday'),
+('JKL012', 6200, 'Saturday'),
+('MNO345', 5100, 'Wednesday'),
+('STU901', 5400, 'Sunday'),
+('YZA567', 5900, 'Monday'),
+('QRS345', 5600, 'Thursday');
+
 
 INSERT INTO Item (name, price, weight, purchase_id) VALUES
-('Item 1', 10.50, 0.5, NULL),
-('Item 2', 15.75, 0.8, NULL),
-('Item 3', 20.00, 0.3, NULL),
-('Item 4', 5.25, 0.2, NULL),
-('Item 5', 17.50, 1.0, NULL),
-('Item 6', 8.99, 0.6, NULL),
-('Item 7', 3.50, 0.1, NULL),
-('Item 8', 14.00, 0.4, NULL),
-('Item 9', 22.50, 0.9, NULL),
-('Item 10', 11.00, 0.7, NULL),
-('Item 11', 9.95, 0.5, NULL),
-('Item 12', 12.30, 0.75, NULL),
-('Item 13', 14.55, 0.85, NULL),
-('Item 14', 3.10, 0.15, NULL),
-('Item 15', 18.20, 0.95, NULL),
-('Item 16', 6.85, 0.55, NULL),
-('Item 17', 4.45, 0.25, NULL),
-('Item 18', 15.15, 0.65, NULL),
-('Item 19', 21.40, 0.80, NULL),
-('Item 20', 10.10, 0.70, NULL),
-('Item 21', 7.00, 0.50, NULL),
-('Item 22', 13.00, 0.60, NULL),
-('Item 23', 5.00, 0.30, NULL),
-('Item 24', 16.75, 0.75, NULL),
-('Item 25', 19.50, 0.95, NULL),
-('Item 26', 2.50, 0.20, NULL),
-('Item 27', 11.25, 0.55, NULL),
-('Item 28', 8.75, 0.45, NULL),
-('Item 29', 13.50, 0.65, NULL),
-('Item 30', 18.25, 0.85, NULL),
-('Item 31', 4.00, 0.25, NULL),
-('Item 32', 15.80, 0.75, NULL),
-('Item 33', 9.60, 0.60, NULL),
-('Item 34', 20.35, 0.90, NULL),
-('Item 35', 12.45, 0.65, NULL),
-('Item 36', 3.30, 0.20, NULL),
-('Item 37', 17.10, 0.80, NULL),
-('Item 38', 6.55, 0.40, NULL),
-('Item 39', 11.70, 0.50, NULL),
-('Item 40', 14.85, 0.85, NULL),
-('Item 41', 5.95, 0.35, NULL),
-('Item 42', 8.20, 0.45, NULL),
-('Item 43', 10.40, 0.60, NULL),
-('Item 44', 7.15, 0.35, NULL),
-('Item 45', 4.40, 0.25, NULL),
-('Item 46', 18.65, 0.85, NULL),
-('Item 47', 15.90, 0.75, NULL),
-('Item 48', 2.75, 0.15, NULL),
-('Item 49', 13.20, 0.65, NULL),
-('Item 50', 16.00, 0.80, NULL),
-('Item 51', 19.75, 0.90, NULL),
-('Item 52', 21.50, 0.95, NULL),
-('Item 53', 11.25, 0.60, NULL),
-('Item 54', 3.50, 0.30, NULL),
-('Item 55', 17.75, 0.75, NULL),
-('Item 56', 6.20, 0.40, NULL),
-('Item 57', 9.45, 0.45, NULL),
-('Item 58', 12.70, 0.55, NULL),
-('Item 59', 14.95, 0.70, NULL),
-('Item 60', 20.20, 0.80, NULL);
+('Item 1', 10.50, 1000, NULL),
+('Item 2', 15.75, 200, NULL),
+('Item 3', 20.00, 100, NULL),
+('Item 4', 5.25, 300, NULL),
+('Item 5', 17.50, 400, NULL),
+('Item 6', 8.99, 700, NULL),
+('Item 7', 3.50, 1000, NULL),
+('Item 8', 14.00, 1000, NULL),
+('Item 9', 22.50, 1000, NULL),
+('Item 10', 11.00, 1000, NULL),
+('Item 11', 9.95, 3000, NULL),
+('Item 12', 12.30, 6000, NULL),
+('Item 13', 14.55, 1000, NULL),
+('Item 14', 3.10, 500, NULL),
+('Item 15', 18.20, 1000, NULL);
 
 
+INSERT INTO Purchase (customerName, price, weight) VALUES
+('Customer A', 0, 0),
+('Customer B', 0, 0),
+('Customer C', 0, 0),
+('Customer D', 0, 0),
+('Customer E', 0, 0);
 
+-- Actualizar Purchase 1 con Items 1, 2, 3
+UPDATE Purchase SET
+price = (SELECT SUM(price) FROM Item WHERE id IN (1, 2, 3,4,5)),
+weight = (SELECT SUM(weight) FROM Item WHERE id IN (1, 2, 3,4,5))
+WHERE id = 1;
 
-INSERT INTO Purchase (customerName, price, weight, deliveryDate, trip_id) VALUES
-('John Doe', 100, 10, '2023-05-01 10:00:00', 1),
-('Jane Smith', 150, 15, '2023-05-02 11:00:00', 2),
-('Alice Johnson', 200, 20, '2023-05-03 12:00:00', 3),
-('Bob Brown', 250, 25, '2023-05-04 13:00:00', 4),
-('Charlie Davis', 300, 30, '2023-05-05 14:00:00', 5),
-('Diana Evans', 350, 35, '2023-05-06 15:00:00', 6),
-('Frank Wilson', 400, 40, '2023-05-07 16:00:00', 7),
-('Grace Lee', 450, 45, '2023-05-08 17:00:00', 8),
-('Henry White', 500, 50, '2023-05-09 18:00:00', 9),
-('Isla King', 550, 55, '2023-05-10 19:00:00', 10),
-('Jack Taylor', 600, 60, '2023-05-11 20:00:00', 11),
-('Kara Martin', 650, 65, '2023-05-12 21:00:00', 12),
-('Liam Scott', 700, 70, '2023-05-13 22:00:00', 13),
-('Mia Green', 750, 75, '2023-05-14 23:00:00', 14),
-('Nolan Carter', 800, 80, '2023-05-15 00:00:00', 15);
+-- Actualizar Purchase 2 con Items 4, 5, 6
+UPDATE Purchase SET
+price = (SELECT SUM(price) FROM Item WHERE id IN (1,6, 7)),
+weight = (SELECT SUM(weight) FROM Item WHERE id IN (1,6, 7))
+WHERE id = 2;
+
+-- Actualizar Purchase 3 con Items 7, 8, 9
+UPDATE Purchase SET
+price = (SELECT SUM(price) FROM Item WHERE id IN (3, 8, 9)),
+weight = (SELECT SUM(weight) FROM Item WHERE id IN (3, 8, 9))
+WHERE id = 3;
+
+-- Actualizar Purchase 4 con Items 10, 11, 12
+UPDATE Purchase SET
+price = (SELECT SUM(price) FROM Item WHERE id IN (10, 11, 12)),
+weight = (SELECT SUM(weight) FROM Item WHERE id IN (10, 11, 12))
+WHERE id = 4;
+
+-- Actualizar Purchase 5 con Items 13, 14, 15
+UPDATE Purchase SET
+price = (SELECT SUM(price) FROM Item WHERE id IN (13, 14, 15)),
+weight = (SELECT SUM(weight) FROM Item WHERE id IN (13, 14, 15))
+WHERE id = 5;
+
+--actualizando items
+update item set  purchase_id = 1 where id in (1,2,3,4,5);
+update item set  purchase_id = 2 where id in (6,7);
+update item set  purchase_id = 3 where id in (8,9);
+update item set  purchase_id = 4 where id in (10, 11, 12);
+update item set  purchase_id = 4 where id in (13, 14, 15);
 
 INSERT INTO PurchaseAddress (purchase_id, address_id) VALUES
 (1, 1),
-(2, 2),
-(3, 3),
-(4, 4),
-(5, 5),
-(6, 6),
-(7, 7),
-(8, 8),
-(9, 9),
-(10, 10),
-(11, 11),
-(12, 12),
-(13, 13),
-(14, 14),
-(15, 15);
-
+(1, 2),
+(1, 3),
+(2, 1),
+(2, 4),
+(2, 5),
+(2, 7),
+(3, 8),
+(3, 9),
+(4, 1),
+(4, 2),
+(4, 3),
+(5, 6),
+(5, 7),
+(5, 8);

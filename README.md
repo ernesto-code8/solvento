@@ -11,6 +11,11 @@ git clone https://github.com/ernesto-code8/solvento.git
 cd solvento
 yarn install
 
+Run scripts sql:
+schemas.sql create the tables
+data-dump.sql initialize the data in the database 
+
+
 To start the application in a development environment:
 yarn start
 
